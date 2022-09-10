@@ -34,14 +34,7 @@ steps:
         **/build/libs/*.jar
         **/build/**/*.xml
     targetFolder: '$(Build.ArtifactStagingDirectory)'
-- task: DownloadBuildArtifacts@0
-  inputs:
-    buildType: 'current'
-    downloadType: 'single'
-    artifactName: 'appJar'
-    downloadPath: '$(Pipeline.Workspace)'
-  displayName: Descarga Jar
-
+    
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: 'Usach'
