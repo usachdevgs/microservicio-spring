@@ -33,3 +33,8 @@ steps:
   inputs:
     pollingTimeoutSec: '300'
   displayName: 'Publish Analysis Results'
+
+- task: sonarcloud-buildbreaker@2
+  inputs:
+    SonarCloud: 'Usach'
+    organization: 'usachdevgs'
