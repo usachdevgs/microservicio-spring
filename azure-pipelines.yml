@@ -21,6 +21,27 @@ steps:
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
 
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: |
+        **/build/libs/*.jar
+        **/build/**/*.xml
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: appJar
+    publishLocation: 'Container'
+- task: DownloadBuildArtifacts@0
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'appJar'
+    downloadPath: '$(Pipeline.Workspace)'
+  displayName: Descarga Jar
+
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: 'Usach'
@@ -28,7 +49,9 @@ steps:
     scannerMode: 'MSBuild'
     projectKey: 'usachdevgs_microservicio-spring'
     projectName: 'microservicio-spring'
-
+    extraProperties: |
+      sonar.coverage.jacoco.xmlReportPaths=$(Pipeline.Workspace)/appJar/build/reports/jacoco/test/jacocoTestReport.xml
+  displayName: 'Preparing Sonarqube Environment'
 - task: SonarCloudPublish@1
   inputs:
     pollingTimeoutSec: '300'
@@ -38,3 +61,14 @@ steps:
   inputs:
     SonarCloud: 'Usach'
     organization: 'usachdevgs'
+
+- task: DownloadBuildArtifacts@0
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'appJar'
+    downloadPath: '$(Pipeline.Workspace)'
+  displayName: Descarga Jar
+
+- script: "mkdir -p build/libs; mv $(Pipeline.Workspace)/appJar/build/libs/ build/; chmod -R 555 build/libs"
+  displayName:  Se mueve JAR a carpeta raiz
