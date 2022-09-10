@@ -54,4 +54,3 @@ steps:
   inputs:
     SonarCloud: 'Usach'
     organization: 'usachdevgs'
-
